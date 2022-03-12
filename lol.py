@@ -4,19 +4,20 @@ https://scipython.com/blog/the-double-pendulum/
 """
 import sys
 import numpy as np
+import random
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
 tinp = (int)(input("how many seconds  | "))
-finp = (int)(input("frames per second | "))
+finp = 3
 f = open("angles.txt", "a")
 f.truncate(0)
 pi = 3.1415
 
 # Pendulum rod lengths (m), bob masses (kg).
-L1, L2 = 1, 1
-m1, m2 = 1, 1
+L1, L2 = (random.random() * 2 + 1), (random.random() * 2 + 1)
+m1, m2 = (random.random() * 2 + 1), (random.random() * 2 + 1)
 # The gravitational acceleration (m.s-2).
 g = 9.81
 
@@ -52,12 +53,12 @@ y0 = np.array([3*np.pi/7, 0, 3*np.pi/4, 0])
 # Do the numerical integration of the equations of motion
 y = odeint(deriv, y0, t, args=(L1, L2, m1, m2))
 
-# Check that the calculation conserves total energy to within some tolerance.
-EDRIFT = 0.1
-# Total energy from the initial conditions
-E = calc_E(y0)
-if np.max(np.sum(np.abs(calc_E(y) - E))) > EDRIFT:
-    sys.exit('Maximum energy drift of {} exceeded.'.format(EDRIFT))
+# # Check that the calculation conserves total energy to within some tolerance.
+# EDRIFT = 10
+# # Total energy from the initial conditions
+# E = calc_E(y0)
+# if np.max(np.sum(np.abs(calc_E(y) - E))) > EDRIFT:
+#     sys.exit('Maximum energy drift of {} exceeded.'.format(EDRIFT))
 
 # Unpack z and theta as a function of time
 theta1, theta2 = y[:,0], y[:,2]
@@ -76,7 +77,8 @@ trail_secs = 0
 max_trail = int(trail_secs / dt)
 
 def make_text(i):
-    f.write("%d\t%0.3f\n" %((i/finp),(180-(theta1[i]*180/pi)+(theta2[i]*180/pi))%360))
+    #f.write("%d\t%0.3f\n" %((i/finp),(180-(theta1[i]*180/pi)+(theta2[i]*180/pi))%360))
+    f.write("%0.0f\n" %((180-(theta1[i]*180/pi)+(theta2[i]*180/pi))%360))
 
 def make_plot(i):
     # Plot and save an image of the double pendulum configuration for time
@@ -128,7 +130,7 @@ fig = plt.figure(figsize=(8.3333, 6.25), dpi=72)
 ax = fig.add_subplot(111)
 
 for i in range(0, t.size, di):
-    print(i // di, '/', t.size // di)
+    #print(i // di, '/', t.size // di)
     #make_plot(i)
     make_text(i)
 f.close()
